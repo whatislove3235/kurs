@@ -1,0 +1,629 @@
+penapi: 3.0.3
+info:
+  title: Auction User Management API
+  version: 1.0.0
+paths:
+  /register:
+    post:
+      summary: Регистрация нового пользователя
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Успешная регистрация
+          content:
+            application/json:
+              example:
+                success: true
+                message: Пользователь успешно зарегистрирован
+
+  /login:
+    post:
+      summary: Авторизация пользователя
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identity:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Успешная авторизация
+          content:
+            application/json:
+              example:
+                success: true
+                message: Авторизация успешна
+        '401':
+          description: Неверные логин или пароль
+          content:
+            application/json:
+              example:
+                success: false
+                message: Неверные логин или пароль
+
+  /forgot_password:
+    post:
+      summary: Восстановление пароля
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Успешное восстановление пароля
+          content:
+            application/json:
+              example:
+                success: true
+                message: Новый пароль отправлен на указанный email
+        '404':
+          description: Пользователь с указанным email не найден
+          content:
+            application/json:
+              example:
+                success: false
+                message: Учетная запись с указанным email не найдена
+
+  /change_password:
+    post:
+      summary: Смена пароля пользователя
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_password:
+                  type: string
+                new_password:
+                  type: string
+                confirm_password:
+                  type: string
+      responses:
+        '200':
+          description: Успешная смена пароля
+          content:
+            application/json:
+              example:
+                success: true
+                message: Пароль успешно изменен
+        '400':
+          description: Некорректный запрос или не все поля заполнены
+          content:
+            application/json:
+              example:
+                success: false
+                message: Некорректный запрос или не все поля заполнены
+        '401':
+          description: Неверный текущий пароль
+          content:
+            application/json:
+              example:
+                success: false
+                message: Неверный текущий пароль
+  /update_info:
+    put:
+      summary: Обновление профиля пользователя
+      tags:
+        - user
+      parameters:
+        - in: query
+          name: full_name
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: city
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: payment_method
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное обновление профиля
+          content:
+            application/json:
+              example:
+                success: true
+                message: Информация успешно обновлена
+        '400':
+          description: Некорректный запрос или не все поля заполнены
+          content:
+            application/json:
+              example:
+                success: false
+                message: Некорректный запрос или не все поля заполнены
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              example:
+                success: false
+                message: Пользователь не найден
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              example:
+                success: false
+                message: Ошибка сервера
+  /user/{userId}/bids:
+    get:
+      summary: Получение истории ставок пользователя
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение истории ставок
+          content:
+            application/json:
+              example:
+                bids: [...]
+                
+  /user/{userId}/favorites:
+    get:
+      summary: Получение списка избранных лотов пользователя
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение списка избранных лотов
+          content:
+            application/json:
+              example:
+                favorites: [...]
+
+  /user/{userId}/favorites/{lotId}:
+    post:
+      summary: Добавление лота в избранное
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: lotId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное добавление лота в избранное
+          content:
+            application/json:
+              example:
+                success: true
+                message: Лот добавлен в избранное
+
+    delete:
+      summary: Удаление лота из избранного
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: lotId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное удаление лота из избранного
+          content:
+            application/json:
+              example:
+                success: true
+                message: Лот удален из избранного
+
+  /user/{userId}/won_lots:
+    get:
+      summary: Получение списка лотов, выигранных пользователем
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение списка выигранных лотов
+          content:
+            application/json:
+              example:
+                won_lots: [...]   
+  /user/{userId}/feedback:
+    post:
+      summary: Отправка формы обратной связи
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                message:
+                  type: string
+      responses:
+        '200':
+          description: Успешная отправка формы обратной связи
+          content:
+            application/json:
+              example:
+                success: true
+                message: Форма обратной связи успешно отправлена       
+  /user/{userId}:
+    get:
+      summary: Получение информации о пользователе
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение информации о пользователе
+          content:
+            application/json:
+              example:
+                success: true
+                message: Информация о пользователе
+  /admin/create_lot:
+    post:
+      summary: Создание нового лота
+      tags:
+        - moderator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                start_price:
+                  type: number
+                price_step:
+                  type: number
+                end_time:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Лот успешно создан
+          content:
+            application/json:
+              example:
+                success: true
+                message: Лот успешно создан
+
+  /admin/update_lot/{lotId}:
+    put:
+      summary: Изменение параметров лота
+      tags:
+        - moderator
+      parameters:
+        - in: path
+          name: lotId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                start_price:
+                  type: number
+                price_step:
+                  type: number
+                end_time:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Параметры лота успешно изменены
+          content:
+            application/json:
+              example:
+                success: true
+                message: Параметры лота успешно изменены
+
+  /admin/update_lot_images/{lotId}:
+    put:
+      summary: Добавление/изменение картинок лота
+      tags:
+        - moderator
+      parameters:
+        - in: path
+          name: lotId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Картинки лота успешно добавлены/изменены
+          content:
+            application/json:
+              example:
+                success: true
+                message: Картинки лота успешно добавлены/изменены    
+  /admin/delete_lot/{lotId}:
+    delete:
+      summary: Удаление лота
+      tags:
+        - moderator
+      parameters:
+        - in: path
+          name: lotId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Лот успешно удален
+          content:
+            application/json:
+              example:
+                success: true
+                message: Лот успешно удален    
+  /admin/respond_feedback/{feedbackId}:
+    post:
+      summary: Ответ на форму обратной связи от модератора
+      tags:
+        - moderator
+      parameters:
+        - in: path
+          name: feedbackId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                response:
+                  type: string
+      responses:
+        '200':
+          description: Ответ на форму обратной связи успешно отправлен
+          content:
+            application/json:
+              example:
+                success: true
+                message: Ответ на форму обратной связи успешно отправлен       
+  /lots:
+    get:
+      summary: Получение списка всех лотов
+      tags:
+        - lot
+      responses:
+        '200':
+          description: Успешное получение списка лотов
+          content:
+            application/json:
+              example:
+                lots:
+                  - lotId: 1
+                    title: "Название лота 1"
+                    description: "Описание лота 1"
+                    currentPrice: 150
+                    startTime: "2023-01-01T12:00:00Z"
+                    endTime: "2023-01-10T18:00:00Z"
+                  - lotId: 2
+                    title: "Название лота 2"
+                    description: "Описание лота 2"
+                    currentPrice: 180
+                    startTime: "2023-01-03T09:30:00Z"
+                    endTime: "2023-01-12T15:45:00Z"
+
+  /lots/{lotId}:
+    get:
+      summary: Получение информации о конкретном лоте
+      tags:
+        - lot
+      parameters:
+        - in: path
+          name: lotId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение информации о лоте
+          content:
+            application/json:
+              example:
+                lotId: 1
+                title: "Название лота 1"
+                description: "Описание лота 1"
+                currentPrice: 150
+                startTime: "2023-01-01T12:00:00Z"
+                endTime: "2023-01-10T18:00:00Z"
+
+  /lots/{lotId}/bid:
+    post:
+      summary: Участие в аукционе (сделать ставку)
+      tags:
+        - lot
+      parameters:
+        - in: path
+          name: lotId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bidAmount:
+                  type: number
+      responses:
+        '200':
+          description: Успешное участие в аукционе
+          content:
+            application/json:
+              example:
+                success: true
+                message: "Ставка успешно сделана"
+        '400':
+          description: Некорректная ставка (например, сумма меньше текущей цены)
+          content:
+            application/json:
+              example:
+                success: false
+                message: "Некорректная ставка"
+  /auction:
+    get:
+      summary: Получение информации о текущем состоянии аукциона
+      tags:
+        - auction
+      responses:
+        '200':
+          description: Успешное получение информации о текущем состоянии аукциона
+          content:
+            application/json:
+              example:
+                auctionStatus: "open"
+                currentLot:
+                  lotId: 1
+                  title: "Название лота 1"
+                  description: "Описание лота 1"
+                  startingPrice: 100
+                  currentPrice: 120
+                  startTime: "2023-01-01T12:00:00Z"
+                  endTime: "2023-01-10T12:00:00Z"
+                  image: "lot1.jpg"
+                timeRemaining: "2 days 4 hours"
+    put:
+      summary: Обновление информации о текущем лоте
+      tags:
+        - auction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                startingPrice:
+                  type: number
+                startTime:
+                  type: string
+                  format: date-time
+                endTime:
+                  type: string
+                  format: date-time
+                image:
+                  type: string
+      responses:
+        '200':
+          description: Успешное обновление информации о текущем лоте
+          content:
+            application/json:
+              example:
+                success: true
+                message: "Информация о лоте успешно обновлена"
